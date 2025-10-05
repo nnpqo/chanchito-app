@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import LandingPage from '../components/Primera_vista'
+import Primera_vista from '@/components/Primera_vista'
 import FormUsuarioInicial from '../components/usuario/form_usuario_inicial'
 import VentanaMeta from '../components/usuario/ventana_meta'
 import FormAgregarMeta from '../components/usuario/form_agregar_meta'
@@ -11,8 +11,9 @@ import FormCodigoMeta from '../components/usuario/form_codigo_meta'
 import FormEmprendedor from '../components/emprendedor/form'
 import OfertasPage from '../components/OfertasPage'
 import QRPayment from '../components/QRPayment'
+import { Meta, UserData, BusinessData, Producto, saveUserData, loadUserData, saveBusinessData, loadBusinessData, generateId } from '@/utils/storage'
 
-// Interfaces
+// Interfaces adicionales para componentes
 interface Usuario {
   id: string
   nombre: string
@@ -27,17 +28,6 @@ interface Emprendedor {
   email: string
 }
 
-interface Meta {
-  id: string
-  nombre: string
-  montoObjetivo: number
-  montoActual: number
-  icono: string
-  tipo: 'individual' | 'grupal'
-  fechaCreacion: string
-  participantes?: number
-}
-
 interface Oferta {
   id: string
   titulo: string
@@ -48,21 +38,13 @@ interface Oferta {
   precio: number
   descripcion: string
   ubicacion: string
-  fechaVencimiento: string
+  vigencia: string
+  precioOriginal: number
   rating: number
   disponible: boolean
 }
 
-interface Producto {
-  id: string
-  nombre: string
-  precio: number
-  descuento: number
-  imagen?: string
-  categoria: string
-}
-
-type ViewType = 'landing' | 'login' | 'dashboard' | 'business'
+type ViewType = 'landing' | 'user-auth' | 'user-register' | 'user-dashboard' | 'business-auth' | 'business-dashboard' | 'offers' | 'qr-payment'
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<ViewType>('landing')
@@ -71,31 +53,33 @@ export default function Home() {
   const [metas, setMetas] = useState<Meta[]>([
     {
       id: '1',
-      nombre: 'Vacaciones en Brasil',
-      montoObjetivo: 5000,
+      objetivo: 'Vacaciones en Brasil',
+      monto: 5000,
       montoActual: 2100,
       icono: '✈️',
       tipo: 'individual',
-      fechaCreacion: '2024-01-15',
+      fechaCreacion: new Date('2024-01-15'),
+      completada: false,
     },
     {
       id: '2',
-      nombre: 'Casa nueva',
-      montoObjetivo: 150000,
+      objetivo: 'Casa nueva',
+      monto: 150000,
       montoActual: 45000,
       icono: '🏠',
       tipo: 'grupal',
-      fechaCreacion: '2024-02-01',
-      participantes: 3,
+      fechaCreacion: new Date('2024-02-01'),
+      completada: false,
     },
     {
       id: '3',
-      nombre: 'Auto familiar',
-      montoObjetivo: 80000,
+      objetivo: 'Auto familiar',
+      monto: 80000,
       montoActual: 12000,
       icono: '🚗',
       tipo: 'individual',
-      fechaCreacion: '2024-03-10',
+      fechaCreacion: new Date('2024-03-10'),
+      completada: false,
     }
   ])
   
@@ -110,7 +94,8 @@ export default function Home() {
       precio: 500,
       descripcion: 'Hasta 30% de descuento en hoteles seleccionados',
       ubicacion: 'Todo el país',
-      fechaVencimiento: '2024-12-31',
+      vigencia: '2024-12-31',
+      precioOriginal: 650,
       rating: 4.5,
       disponible: true
     },
@@ -124,7 +109,8 @@ export default function Home() {
       precio: 80,
       descripcion: '25% off en tu primer pedido',
       ubicacion: 'La Paz, Santa Cruz',
-      fechaVencimiento: '2024-11-30',
+      vigencia: '2024-11-30',
+      precioOriginal: 100,
       rating: 4.2,
       disponible: true
     },
@@ -138,7 +124,8 @@ export default function Home() {
       precio: 350,
       descripcion: '40% de descuento en ropa deportiva',
       ubicacion: 'Tiendas físicas',
-      fechaVencimiento: '2024-10-31',
+      vigencia: '2024-10-31',
+      precioOriginal: 583,
       rating: 4.8,
       disponible: true
     }
@@ -152,15 +139,14 @@ export default function Home() {
   const [showQRPayment, setShowQRPayment] = useState(false)
   const [metaSeleccionada, setMetaSeleccionada] = useState<Meta | null>(null)
 
-  const handleUserLogin = () => {
-    const userData = {
+    const handleUserLogin = () => {
+    setUsuario({
       id: '1',
-      nombre: 'Ana García',
-      email: 'ana@email.com',
-      saldo: 1250.75
-    }
-    setUsuario(userData)
-    setCurrentView('dashboard')
+      nombre: 'Juan Pérez',
+      email: 'juan@ejemplo.com',
+      saldo: 10000
+    })
+    setCurrentView('user-dashboard')
   }
 
   const handleUserRegister = (userData: { nombre: string; email: string; password: string }) => {
@@ -171,7 +157,7 @@ export default function Home() {
       saldo: 0
     }
     setUsuario(newUser)
-    setCurrentView('dashboard')
+    setCurrentView('user-dashboard')
   }
 
   const handleBusinessLogin = () => {
@@ -182,15 +168,19 @@ export default function Home() {
       email: 'empresa@email.com'
     }
     setEmprendedor(businessData)
-    setCurrentView('business')
+    setCurrentView('business-dashboard')
   }
 
   const handleAgregarMeta = (metaData: { nombre: string; montoObjetivo: number; icono: string; tipo: 'individual' | 'grupal' }) => {
     const nuevaMeta: Meta = {
       id: Date.now().toString(),
-      ...metaData,
+      objetivo: metaData.nombre,
+      monto: metaData.montoObjetivo,
       montoActual: 0,
-      fechaCreacion: new Date().toISOString().split('T')[0],
+      icono: metaData.icono,
+      tipo: metaData.tipo,
+      fechaCreacion: new Date(),
+      completada: false,
     }
     setMetas([...metas, nuevaMeta])
     setShowAgregarMeta(false)
@@ -200,7 +190,7 @@ export default function Home() {
     if (usuario && usuario.saldo >= monto) {
       setMetas(metas.map(meta => 
         meta.id === metaId 
-          ? { ...meta, montoActual: Math.min(meta.montoActual + monto, meta.montoObjetivo) }
+          ? { ...meta, montoActual: Math.min(meta.montoActual + monto, meta.monto) }
           : meta
       ))
       setUsuario({ ...usuario, saldo: usuario.saldo - monto })
@@ -248,14 +238,16 @@ export default function Home() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <LandingPage
-              onUserLogin={() => setCurrentView('login')}
-              onBusinessLogin={() => setCurrentView('business')}
+            <Primera_vista
+              onUserLogin={() => setCurrentView('user-auth')}
+              onUserRegister={() => setCurrentView('user-register')}
+              onBusinessLogin={() => setCurrentView('business-auth')}
+              onBusinessRegister={() => setCurrentView('business-auth')}
             />
           </motion.div>
         )}
 
-        {currentView === 'login' && (
+        {currentView === 'user-auth' && (
           <motion.div
             key="login"
             initial={{ opacity: 0, x: 20 }}
@@ -263,16 +255,33 @@ export default function Home() {
             exit={{ opacity: 0, x: -20 }}
           >
             <FormUsuarioInicial
-              onLogin={handleUserLogin}
-              onRegister={handleUserRegister}
+              esRegistro={false}
+              onSuccess={handleUserLogin}
               onBack={() => setCurrentView('landing')}
+              onSwitchToRegister={() => setCurrentView('user-register')}
             />
           </motion.div>
         )}
 
-        {currentView === 'dashboard' && usuario && (
+        {currentView === 'user-register' && (
           <motion.div
-            key="dashboard"
+            key="register"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+          >
+            <FormUsuarioInicial
+              esRegistro={true}
+              onSuccess={handleUserRegister}
+              onBack={() => setCurrentView('landing')}
+              onSwitchToLogin={() => setCurrentView('user-auth')}
+            />
+          </motion.div>
+        )}
+
+        {currentView === 'user-dashboard' && usuario && (
+          <motion.div
+            key="user-dashboard"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -282,22 +291,30 @@ export default function Home() {
               metas={metas}
               ofertas={ofertas.slice(0, 3)}
               onAgregarMeta={() => setShowAgregarMeta(true)}
-              onAlimentarMeta={(meta) => {
-                setMetaSeleccionada(meta)
-                setShowAlimentar(true)
+              onAlimentarMeta={(metaId) => {
+                const meta = metas.find(m => m.id === metaId)
+                if (meta) {
+                  setMetaSeleccionada(meta)
+                  setShowAlimentar(true)
+                }
               }}
               onEliminarMeta={handleEliminarMeta}
               onUnirseAMeta={() => setShowCodigoMeta(true)}
               onVerOfertas={() => setShowOfertas(true)}
               onTransferirQR={() => setShowQRPayment(true)}
-              onLogout={handleLogout}
+              onActualizarSaldo={(nuevoSaldo) => {
+                if (usuario) {
+                  setUsuario({ ...usuario, saldo: nuevoSaldo })
+                }
+              }}
+              onActualizarMetas={setMetas}
             />
           </motion.div>
         )}
 
-        {currentView === 'business' && (
+        {currentView === 'business-auth' && (
           <motion.div
-            key="business"
+            key="business-auth"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}

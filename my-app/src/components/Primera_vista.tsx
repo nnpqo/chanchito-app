@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   PiggyBank, 
-  Target, 
   Users, 
   Gift, 
   Star,
@@ -12,7 +11,6 @@ import {
   Shield,
   TrendingUp,
   Smartphone,
-  QrCode,
   Sparkles,
   Heart,
   Zap,
@@ -24,12 +22,12 @@ import {
 interface LandingPageProps {
   onUserLogin: () => void
   onUserRegister: () => void
+  onBusinessLogin: () => void
   onBusinessRegister: () => void
 }
 
-export default function LandingPage({ onUserLogin, onUserRegister, onBusinessRegister }: LandingPageProps) {
+export default function LandingPage({ onUserLogin, onUserRegister, onBusinessLogin, onBusinessRegister }: LandingPageProps) {
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
-  const [showFeatures, setShowFeatures] = useState(false)
 
   const testimonials = [
     {
@@ -52,40 +50,6 @@ export default function LandingPage({ onUserLogin, onUserRegister, onBusinessReg
       name: "Ana Vargas",
       role: "Emprendedora", 
       content: "Como empresa, TuChanchito nos trajo 200+ clientes nuevos con descuentos exclusivos.",
-      avatar: "👩‍💻",
-      rating: 5,
-      amount: "200+ clientes"
-    }
-  ]
-
-  const features = [
-    {
-      icon: Target,
-      title: "Metas Inteligentes",
-      description: "Crea objetivos personalizados con seguimiento visual y motivación constante",
-      color: "from-pink-500 to-rose-500",
-      bgColor: "bg-pink-50"
-    },
-    {
-      icon: Users,
-      title: "Ahorro Grupal",
-      description: "Únete con familia y amigos para lograr metas más grandes juntos",
-      color: "from-purple-500 to-violet-500", 
-      bgColor: "bg-purple-50"
-    },
-    {
-      icon: QrCode,
-      title: "Pagos QR",
-      description: "Transferencias instantáneas desde tu banco favorito en Bolivia",
-      color: "from-blue-500 to-cyan-500",
-      bgColor: "bg-blue-50"
-    },
-    {
-      icon: Gift,
-      title: "Ofertas Exclusivas",
-      description: "Descuentos especiales en 200+ empresas por ser ahorrador",
-      color: "from-emerald-500 to-teal-500",
-      bgColor: "bg-emerald-50"
     }
   ]
 
@@ -222,18 +186,7 @@ export default function LandingPage({ onUserLogin, onUserRegister, onBusinessReg
             animate={{ opacity: 1, x: 0 }}
             className="hidden md:flex items-center space-x-8"
           >
-            <button
-              onClick={() => setShowFeatures(!showFeatures)}
-              className="text-gray-700 hover:text-purple-600 transition-colors font-medium"
-            >
-              Características
-            </button>
-            <button className="text-gray-700 hover:text-purple-600 transition-colors font-medium">
-              Empresas
-            </button>
-            <button className="text-gray-700 hover:text-purple-600 transition-colors font-medium">
-              Testimonios
-            </button>
+            {/* Navigation buttons removed */}
           </motion.div>
         </nav>
       </header>
@@ -436,45 +389,6 @@ export default function LandingPage({ onUserLogin, onUserRegister, onBusinessReg
         </div>
       </section>
 
-      {/* Features Section */}
-      <AnimatePresence>
-        {showFeatures && (
-          <motion.section
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="relative z-10 px-6 py-16 bg-white/50 backdrop-blur-sm"
-          >
-            <div className="max-w-7xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-4xl font-bold text-gray-800 mb-4">
-                  ¿Por qué elegir <span className="bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">TuChanchito</span>?
-                </h2>
-                <p className="text-xl text-gray-600">Todo lo que necesitas para alcanzar tus metas financieras</p>
-              </div>
-              
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {features.map((feature, index) => (
-                  <motion.div
-                    key={feature.title}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`${feature.bgColor} rounded-3xl p-6 text-center hover:scale-105 transition-transform duration-300`}
-                  >
-                    <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
-                      <feature.icon className="text-white" size={24} />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">{feature.title}</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.section>
-        )}
-      </AnimatePresence>
-
       {/* Companies Section - Redesigned */}
       <section className="relative z-10 px-6 py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto">
@@ -621,9 +535,11 @@ export default function LandingPage({ onUserLogin, onUserRegister, onBusinessReg
                 <motion.button
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 border-2 border-purple-200 text-purple-600 rounded-2xl font-semibold hover:border-purple-300 hover:bg-purple-50 transition-all duration-300"
+                  onClick={onBusinessLogin}
+                  className="px-8 py-4 border-2 border-purple-200 text-purple-600 rounded-2xl font-semibold hover:border-purple-300 hover:bg-purple-50 transition-all duration-300 flex items-center justify-center space-x-2"
                 >
-                  Ver Beneficios
+                  <span>Ya tengo cuenta</span>
+                  <ChevronRight size={20} />
                 </motion.button>
               </div>
               
