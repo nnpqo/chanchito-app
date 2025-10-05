@@ -107,7 +107,7 @@ export default function FormAlimentar({ isOpen, onClose, onSubmit, metaActual }:
                   value={monto || ''}
                   onChange={(e) => setMonto(Number(e.target.value))}
                   placeholder="0.00"
-                  className="w-full p-4 pl-12 text-xl font-semibold border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  className="w-full p-4 pl-12 text-xl font-semibold border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-gray-900"
                 />
               </div>
               {error && (

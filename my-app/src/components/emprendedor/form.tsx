@@ -298,7 +298,7 @@ export default function FormEmprendedor({
                   placeholder="Nombre del producto"
                   value={nuevoProducto.nombre}
                   onChange={(e) => setNuevoProducto({ ...nuevoProducto, nombre: e.target.value })}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 />
 
                 <input
@@ -306,7 +306,7 @@ export default function FormEmprendedor({
                   placeholder="URL de la imagen"
                   value={nuevoProducto.imagen}
                   onChange={(e) => setNuevoProducto({ ...nuevoProducto, imagen: e.target.value })}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 />
 
                 <input
@@ -314,7 +314,7 @@ export default function FormEmprendedor({
                   placeholder="Precio"
                   value={nuevoProducto.costo || ''}
                   onChange={(e) => setNuevoProducto({ ...nuevoProducto, costo: Number(e.target.value) })}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 />
 
                 <input
@@ -322,7 +322,7 @@ export default function FormEmprendedor({
                   placeholder="% Descuento (opcional)"
                   value={nuevoProducto.descuento || ''}
                   onChange={(e) => setNuevoProducto({ ...nuevoProducto, descuento: Number(e.target.value) })}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 />
 
                 <div className="flex space-x-3 pt-4">
@@ -406,7 +406,7 @@ export default function FormEmprendedor({
                     value={formData.nombre}
                     onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                     placeholder="Mi Empresa S.A."
-                    className="w-full p-4 pl-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full p-4 pl-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
                   />
                 </div>
                 {errors.nombre && (
@@ -425,7 +425,7 @@ export default function FormEmprendedor({
                   <select
                     value={formData.sector}
                     onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
-                    className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
+                    className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white text-gray-900"
                   >
                     <option value="">Selecciona un sector</option>
                     {sectores.map((sector) => (
@@ -452,7 +452,7 @@ export default function FormEmprendedor({
                   value={formData.correo}
                   onChange={(e) => setFormData({ ...formData, correo: e.target.value })}
                   placeholder="empresa@email.com"
-                  className="w-full p-4 pl-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full p-4 pl-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
                 />
               </div>
               {errors.correo && (
@@ -472,7 +472,7 @@ export default function FormEmprendedor({
                   value={formData.contrasenia}
                   onChange={(e) => setFormData({ ...formData, contrasenia: e.target.value })}
                   placeholder="••••••••"
-                  className="w-full p-4 pl-12 pr-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full p-4 pl-12 pr-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
                 />
                 <button
                   type="button"

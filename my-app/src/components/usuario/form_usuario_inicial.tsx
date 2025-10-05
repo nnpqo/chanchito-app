@@ -127,7 +127,7 @@ export default function FormUsuarioInicial({ onSubmit, onLogin }: FormUsuarioIni
                     value={formData.nombre}
                     onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                     placeholder="Tu nombre completo"
-                    className="w-full p-4 pl-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                    className="w-full p-4 pl-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all text-gray-900"
                   />
                 </div>
                 {errors.nombre && (
@@ -148,7 +148,7 @@ export default function FormUsuarioInicial({ onSubmit, onLogin }: FormUsuarioIni
                   value={formData.correo}
                   onChange={(e) => setFormData({ ...formData, correo: e.target.value })}
                   placeholder="tu@email.com"
-                  className="w-full p-4 pl-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                  className="w-full p-4 pl-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all text-gray-900"
                 />
               </div>
               {errors.correo && (
@@ -168,7 +168,7 @@ export default function FormUsuarioInicial({ onSubmit, onLogin }: FormUsuarioIni
                   value={formData.contrasenia}
                   onChange={(e) => setFormData({ ...formData, contrasenia: e.target.value })}
                   placeholder="••••••••"
-                  className="w-full p-4 pl-12 pr-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                  className="w-full p-4 pl-12 pr-12 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all text-gray-900"
                 />
                 <button
                   type="button"

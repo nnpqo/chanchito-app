@@ -101,7 +101,7 @@ export default function FormAgregarMeta({ isOpen, onClose, onSubmit }: FormAgreg
               value={formData.objetivo}
               onChange={(e) => setFormData({ ...formData, objetivo: e.target.value })}
               placeholder="Ej: Vacaciones en la playa"
-              className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+              className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all text-gray-900"
             />
             {errors.objetivo && (
               <p className="text-red-500 text-xs">{errors.objetivo}</p>
@@ -122,7 +122,7 @@ export default function FormAgregarMeta({ isOpen, onClose, onSubmit }: FormAgreg
                 value={formData.monto || ''}
                 onChange={(e) => setFormData({ ...formData, monto: Number(e.target.value) })}
                 placeholder="0.00"
-                className="w-full p-4 pl-8 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                className="w-full p-4 pl-8 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all text-gray-900"
               />
             </div>
             {errors.monto && (

@@ -94,7 +94,7 @@ export default function FormCodigoMeta({ isOpen, onClose, onSubmit }: FormCodigo
                   onChange={handleCodigoChange}
                   placeholder="Ej: ABC123"
                   maxLength={10}
-                  className="w-full p-4 pl-12 text-xl font-mono font-semibold border border-gray-200 rounded-2xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all uppercase tracking-wider"
+                  className="w-full p-4 pl-12 text-xl font-mono font-semibold border border-gray-200 rounded-2xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all uppercase tracking-wider text-gray-900"
                 />
               </div>
               {error && (
