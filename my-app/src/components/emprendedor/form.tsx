@@ -76,6 +76,7 @@ export default function FormEmprendedor({
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [showProductForm, setShowProductForm] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string>('');
 
   // Estado del formulario de producto
   const [nuevoProducto, setNuevoProducto] = useState({
@@ -86,6 +87,19 @@ export default function FormEmprendedor({
     categoria: '',
     activo: true
   });
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setImagePreview(result);
+        setNuevoProducto({ ...nuevoProducto, imagen: result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -142,6 +156,7 @@ export default function FormEmprendedor({
         categoria: '',
         activo: true
       });
+      setImagePreview('');
       setShowProductForm(false);
     }
   };
@@ -169,57 +184,55 @@ export default function FormEmprendedor({
 
         <div className="max-w-6xl mx-auto px-4 py-6">
           {/* Estadísticas */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm">Productos</p>
-                  <h3 className="text-2xl font-bold text-gray-900">{productos.length}</h3>
-                </div>
-                <div className="p-3 bg-blue-100 rounded-full">
-                  <Package className="text-blue-600" size={20} />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm">Ventas</p>
-                  <h3 className="text-2xl font-bold text-gray-900">$12,450</h3>
-                </div>
-                <div className="p-3 bg-green-100 rounded-full">
-                  <TrendingUp className="text-green-600" size={20} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-600 text-sm">Productos</p>
+                    <h3 className="text-2xl font-bold text-gray-900">{productos.length}</h3>
+                  </div>
+                  <div className="p-3 bg-blue-100 rounded-full">
+                    <Package className="text-blue-600" size={20} />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm">Clientes</p>
-                  <h3 className="text-2xl font-bold text-gray-900">847</h3>
-                </div>
-                <div className="p-3 bg-purple-100 rounded-full">
-                  <Users className="text-purple-600" size={20} />
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-600 text-sm">Ventas</p>
+                    <h3 className="text-2xl font-bold text-gray-900">12,450 Bs</h3>
+                  </div>
+                  <div className="p-3 bg-green-100 rounded-full">
+                    <TrendingUp className="text-green-600" size={20} />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm">Conversión</p>
-                  <h3 className="text-2xl font-bold text-gray-900">14.2%</h3>
-                </div>
-                <div className="p-3 bg-orange-100 rounded-full">
-                  <BarChart3 className="text-orange-600" size={20} />
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-600 text-sm">Clientes</p>
+                    <h3 className="text-2xl font-bold text-gray-900">847</h3>
+                  </div>
+                  <div className="p-3 bg-purple-100 rounded-full">
+                    <Users className="text-purple-600" size={20} />
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Productos */}
+              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-600 text-sm">Conversión</p>
+                    <h3 className="text-2xl font-bold text-gray-900">14.2%</h3>
+                  </div>
+                  <div className="p-3 bg-orange-100 rounded-full">
+                    <BarChart3 className="text-orange-600" size={20} />
+                  </div>
+                </div>
+              </div>
+            </div>          {/* Productos */}
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">Mis Productos</h2>
@@ -260,7 +273,7 @@ export default function FormEmprendedor({
                     <div className="p-4">
                       <h3 className="font-semibold text-gray-900 mb-2">{producto.nombre}</h3>
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-lg font-bold text-gray-900">${producto.costo.toLocaleString()}</span>
+                        <span className="text-lg font-bold text-gray-900">{producto.costo.toLocaleString()} Bs</span>
                         {producto.descuento > 0 && (
                           <span className="bg-red-100 text-red-800 px-2 py-1 rounded-lg text-xs font-semibold">
                             -{producto.descuento}%
@@ -270,9 +283,6 @@ export default function FormEmprendedor({
                       <div className="flex space-x-2">
                         <button className="flex-1 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
                           Editar
-                        </button>
-                        <button className="flex-1 py-2 text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors">
-                          Ver stats
                         </button>
                       </div>
                     </div>
@@ -292,52 +302,138 @@ export default function FormEmprendedor({
                 <p className="text-white/80 text-sm">Agrega un producto a tu catálogo</p>
               </div>
 
-              <form onSubmit={handleAgregarProducto} className="p-6 space-y-4">
-                <input
-                  type="text"
-                  placeholder="Nombre del producto"
-                  value={nuevoProducto.nombre}
-                  onChange={(e) => setNuevoProducto({ ...nuevoProducto, nombre: e.target.value })}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+              <form onSubmit={handleAgregarProducto} className="p-6 space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Nombre del producto <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Nombre del producto"
+                    value={nuevoProducto.nombre}
+                    onChange={(e) => setNuevoProducto({ ...nuevoProducto, nombre: e.target.value })}
+                    className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                  />
+                </div>
 
-                <input
-                  type="url"
-                  placeholder="URL de la imagen"
-                  value={nuevoProducto.imagen}
-                  onChange={(e) => setNuevoProducto({ ...nuevoProducto, imagen: e.target.value })}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Imagen del producto
+                  </label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition-colors">
+                    {imagePreview ? (
+                      <div className="space-y-4">
+                        <img 
+                          src={imagePreview} 
+                          alt="Preview" 
+                          className="w-32 h-32 object-cover rounded-xl mx-auto"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setImagePreview('');
+                            setNuevoProducto({ ...nuevoProducto, imagen: '' });
+                          }}
+                          className="text-sm text-red-600 hover:text-red-700"
+                        >
+                          Eliminar imagen
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <Upload className="mx-auto text-gray-400 mb-2" size={32} />
+                        <p className="text-gray-600 mb-2">Haz clic para subir una imagen</p>
+                        <p className="text-xs text-gray-500">PNG, JPG hasta 5MB</p>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                  </div>
+                </div>
 
-                <input
-                  type="number"
-                  placeholder="Precio"
-                  value={nuevoProducto.costo || ''}
-                  onChange={(e) => setNuevoProducto({ ...nuevoProducto, costo: Number(e.target.value) })}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Precio (Bs) <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                        Bs
+                      </span>
+                      <input
+                        type="number"
+                        placeholder="0.00"
+                        value={nuevoProducto.costo || ''}
+                        onChange={(e) => setNuevoProducto({ ...nuevoProducto, costo: Number(e.target.value) })}
+                        className="w-full p-4 pl-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                      />
+                    </div>
+                  </div>
 
-                <input
-                  type="number"
-                  placeholder="% Descuento (opcional)"
-                  value={nuevoProducto.descuento || ''}
-                  onChange={(e) => setNuevoProducto({ ...nuevoProducto, descuento: Number(e.target.value) })}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      % Descuento
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      min="0"
+                      max="100"
+                      value={nuevoProducto.descuento || ''}
+                      onChange={(e) => setNuevoProducto({ ...nuevoProducto, descuento: Number(e.target.value) })}
+                      className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Categoría
+                  </label>
+                  <select
+                    value={nuevoProducto.categoria}
+                    onChange={(e) => setNuevoProducto({ ...nuevoProducto, categoria: e.target.value })}
+                    className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  >
+                    <option value="">Seleccionar categoría</option>
+                    <option value="comida">Comida</option>
+                    <option value="ropa">Ropa</option>
+                    <option value="tecnologia">Tecnología</option>
+                    <option value="hogar">Hogar</option>
+                    <option value="deportes">Deportes</option>
+                    <option value="otros">Otros</option>
+                  </select>
+                </div>
 
                 <div className="flex space-x-3 pt-4">
                   <button
                     type="button"
-                    onClick={() => setShowProductForm(false)}
-                    className="flex-1 p-3 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    onClick={() => {
+                      setShowProductForm(false);
+                      setImagePreview('');
+                      setNuevoProducto({
+                        nombre: '',
+                        imagen: '',
+                        costo: 0,
+                        descuento: 0,
+                        categoria: '',
+                        activo: true
+                      });
+                    }}
+                    className="flex-1 p-4 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 p-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-purple-600 transition-all"
+                    className="flex-1 p-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-medium hover:from-blue-600 hover:to-purple-600 transition-all transform hover:scale-105 flex items-center justify-center space-x-2"
                   >
-                    Agregar
+                    <Sparkles size={18} />
+                    <span>Agregar Producto</span>
                   </button>
                 </div>
               </form>

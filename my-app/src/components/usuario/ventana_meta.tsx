@@ -1,19 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, 
   Plus, 
   Users, 
   Gift, 
   DollarSign, 
-  TrendingUp, 
-  Settings,
-  Bell,
+  TrendingUp,
   Search,
   Target,
-  Calendar,
-  Share2
+  Share2,
+  Trash2,
+  RefreshCw,
+  QrCode
 } from 'lucide-react';
 
 interface Meta {
@@ -48,7 +49,52 @@ interface VentanaMetaProps {
   onUnirseAMeta: () => void;
   onAlimentarMeta: (metaId: string) => void;
   onVerOfertas: () => void;
+  onEliminarMeta?: (metaId: string) => void;
+  onTransferirQR?: () => void;
+  showFeedingAnimation?: boolean;
 }
+
+// Componente de animación del chanchito
+const ChanchitoBounce = ({ show }: { show: boolean }) => {
+  if (!show) return null;
+
+  return (
+    <motion.div
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0, opacity: 0 }}
+      className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
+    >
+      <motion.div
+        initial={{ y: -50 }}
+        animate={{ 
+          y: [0, -20, 0, -10, 0],
+          rotate: [0, -5, 5, -2, 0]
+        }}
+        transition={{ 
+          duration: 1.5,
+          times: [0, 0.3, 0.6, 0.8, 1]
+        }}
+        className="text-center"
+      >
+        <div className="text-9xl mb-4">🐷</div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-white rounded-2xl p-6 shadow-2xl"
+        >
+          <h2 className="text-2xl font-bold text-pink-600 mb-2">
+            ¡Alimentaste al Chanchito! 🎉
+          </h2>
+          <p className="text-gray-600">
+            Tu meta está más cerca de cumplirse
+          </p>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 export default function VentanaMeta({ 
   usuario, 
@@ -57,12 +103,16 @@ export default function VentanaMeta({
   onAgregarMeta, 
   onUnirseAMeta, 
   onAlimentarMeta,
-  onVerOfertas 
+  onVerOfertas,
+  onEliminarMeta,
+  onTransferirQR,
+  showFeedingAnimation = false
 }: VentanaMetaProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
   const metasFiltradas = metas.filter(meta => 
-    meta.objetivo.toLowerCase().includes(searchTerm.toLowerCase())
+    meta.objetivo?.toLowerCase().includes(searchTerm.toLowerCase()) || false
   );
 
   const calcularPorcentaje = (actual: number, objetivo: number) => {
@@ -87,12 +137,7 @@ export default function VentanaMeta({
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <button className="p-3 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
-                <Bell size={20} />
-              </button>
-              <button className="p-3 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
-                <Settings size={20} />
-              </button>
+              {/* Removed notification and settings buttons */}
             </div>
           </div>
         </div>
@@ -106,15 +151,19 @@ export default function VentanaMeta({
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-white/80 text-sm">Saldo Total</p>
-                <h2 className="text-3xl font-bold">${usuario.saldo.toLocaleString()}</h2>
+                <h2 className="text-3xl font-bold">{(usuario.saldo || 0).toLocaleString()} Bs</h2>
               </div>
-              <div className="p-3 bg-white/20 rounded-full">
+              <motion.div 
+                className="p-3 bg-white/20 rounded-full"
+                whileHover={{ scale: 1.1, rotate: 10 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <DollarSign size={24} />
-              </div>
+              </motion.div>
             </div>
             <div className="flex items-center space-x-2 text-white/80 text-sm">
               <TrendingUp size={16} />
-              <span>+$1,250 este mes</span>
+              <span>+1,250 Bs este mes</span>
             </div>
           </div>
 
@@ -123,7 +172,7 @@ export default function VentanaMeta({
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-gray-600 text-sm">Total Ahorrado</p>
-                <h3 className="text-2xl font-bold text-gray-900">${totalAhorrado.toLocaleString()}</h3>
+                <h3 className="text-2xl font-bold text-gray-900">{totalAhorrado.toLocaleString()} Bs</h3>
               </div>
               <div className="p-3 bg-emerald-100 rounded-full">
                 <Target className="text-emerald-600" size={20} />
@@ -134,7 +183,7 @@ export default function VentanaMeta({
         </div>
 
         {/* Acciones Rápidas */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <button
             onClick={onAgregarMeta}
             className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all hover:scale-105 text-left group"
@@ -179,6 +228,23 @@ export default function VentanaMeta({
               </div>
             </div>
           </button>
+
+          {onTransferirQR && (
+            <button
+              onClick={onTransferirQR}
+              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all hover:scale-105 text-left group"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-green-100 rounded-full group-hover:bg-green-200 transition-colors">
+                  <QrCode className="text-green-600" size={20} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Transferir QR</h3>
+                  <p className="text-sm text-gray-600">Agrega dinero</p>
+                </div>
+              </div>
+            </button>
+          )}
         </div>
 
         {/* Mis Metas */}
@@ -218,10 +284,15 @@ export default function VentanaMeta({
                 const estaCompleta = porcentaje >= 100;
                 
                 return (
-                  <div key={meta.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all">
+                  <div key={meta.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all group">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
-                        <div className="text-2xl">{meta.icono}</div>
+                        <motion.div 
+                          className="text-2xl"
+                          whileHover={{ scale: 1.2, rotate: 10 }}
+                        >
+                          {meta.icono}
+                        </motion.div>
                         <div>
                           <h3 className="font-semibold text-gray-900">{meta.objetivo}</h3>
                           <div className="flex items-center space-x-2 text-sm text-gray-500">
@@ -230,11 +301,19 @@ export default function VentanaMeta({
                           </div>
                         </div>
                       </div>
-                      {meta.tipo === 'grupal' && (
-                        <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                          <Share2 size={16} />
+                      <div className="flex items-center space-x-2">
+                        {meta.tipo === 'grupal' && (
+                          <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                            <Share2 size={16} />
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => setShowDeleteConfirm(meta.id)}
+                          className="p-2 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          <Trash2 size={16} />
                         </button>
-                      )}
+                      </div>
                     </div>
 
                     <div className="space-y-3">
@@ -244,7 +323,7 @@ export default function VentanaMeta({
                       </div>
                       
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
+                        <motion.div 
                           className={`h-2 rounded-full transition-all duration-500 ${
                             estaCompleta 
                               ? 'bg-gradient-to-r from-emerald-500 to-green-500' 
@@ -252,26 +331,34 @@ export default function VentanaMeta({
                                 ? 'bg-gradient-to-r from-violet-500 to-purple-500'
                                 : 'bg-gradient-to-r from-pink-500 to-violet-500'
                           }`}
-                          style={{ width: `${porcentaje}%` }}
-                        ></div>
+                          initial={{ width: 0 }}
+                          animate={{ width: `${porcentaje}%` }}
+                          transition={{ duration: 1, delay: 0.2 }}
+                        ></motion.div>
                       </div>
 
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">${meta.montoActual.toLocaleString()}</span>
-                        <span className="font-semibold">${meta.montoObjetivo.toLocaleString()}</span>
+                        <span className="text-gray-600">{(meta.montoActual || 0).toLocaleString()} Bs</span>
+                        <span className="font-semibold">{(meta.montoObjetivo || 0).toLocaleString()} Bs</span>
                       </div>
 
                       {estaCompleta ? (
-                        <div className="bg-emerald-50 text-emerald-800 px-3 py-2 rounded-xl text-sm font-medium text-center">
-                          🎉 ¡Meta completada!
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => onAlimentarMeta(meta.id)}
-                          className="w-full py-3 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl font-medium transition-colors"
+                        <motion.div 
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="bg-emerald-50 text-emerald-800 px-3 py-2 rounded-xl text-sm font-medium text-center"
                         >
-                          Agregar dinero
-                        </button>
+                          🎉 ¡Meta completada!
+                        </motion.div>
+                      ) : (
+                        <motion.button
+                          onClick={() => onAlimentarMeta(meta.id)}
+                          className="w-full py-3 bg-gray-50 hover:bg-gradient-to-r hover:from-pink-500 hover:to-violet-500 hover:text-white text-gray-700 rounded-xl font-medium transition-all transform hover:scale-105"
+                          whileHover={{ y: -2 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          🐷 Alimentar Chanchito
+                        </motion.button>
                       )}
                     </div>
                   </div>
@@ -316,6 +403,58 @@ export default function VentanaMeta({
           </div>
         )}
       </div>
+
+      {/* Modal de confirmación para eliminar meta */}
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-3xl p-8 max-w-md w-full text-center"
+            >
+              <div className="text-6xl mb-4">🐷💔</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                ¿Eliminar esta meta?
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Se reembolsará el dinero ahorrado a tu saldo principal. Esta acción no se puede deshacer.
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(null)}
+                  className="flex-1 py-3 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => {
+                    if (onEliminarMeta) {
+                      onEliminarMeta(showDeleteConfirm);
+                    }
+                    setShowDeleteConfirm(null);
+                  }}
+                  className="flex-1 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl font-medium hover:from-red-600 hover:to-pink-600 transition-all transform hover:scale-105 flex items-center justify-center space-x-2"
+                >
+                  <RefreshCw size={16} />
+                  <span>Reembolsar y Eliminar</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Animación del chanchito */}
+      <AnimatePresence>
+        <ChanchitoBounce show={showFeedingAnimation} />
+      </AnimatePresence>
     </div>
   );
 }

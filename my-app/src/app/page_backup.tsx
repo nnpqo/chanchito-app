@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import LandingPage from '../components/Primera_vista'
+import LandingPage from '../components/LandingPageNew'
 import FormUsuarioInicial from '../components/usuario/form_usuario_inicial'
-import VentanaMeta from '../components/usuario/ventana_meta'
+import VentanaMeta from '../components/usuario/ventana_meta_new'
 import FormAgregarMeta from '../components/usuario/form_agregar_meta'
 import FormAlimentar from '../components/usuario/form_alimentar'
 import FormCodigoMeta from '../components/usuario/form_codigo_meta'
@@ -12,30 +12,25 @@ import FormEmprendedor from '../components/emprendedor/form'
 import OfertasPage from '../components/OfertasPage'
 import QRPayment from '../components/QRPayment'
 
-// Interfaces
+// Import storage utilities
+import { 
+  UserData, 
+  Meta, 
+  saveUserData, 
+  loadUserData,
+  setCurrentUser,
+  getCurrentUser,
+  clearSession,
+  generateId,
+  generateMetaCode
+} from '../utils/storage'
+
+// Updated interfaces for TuChanchito
 interface Usuario {
-  id: string
   nombre: string
   email: string
   saldo: number
-}
-
-interface Emprendedor {
-  id: string
-  nombre: string
-  sector: string
-  email: string
-}
-
-interface Meta {
-  id: string
-  nombre: string
-  montoObjetivo: number
-  montoActual: number
-  icono: string
-  tipo: 'individual' | 'grupal'
-  fechaCreacion: string
-  participantes?: number
+  avatar?: string
 }
 
 interface Oferta {
@@ -45,9 +40,12 @@ interface Oferta {
   empresa: string
   imagen: string
   categoria: string
+  vigencia: string
+  rating: number
   precio: number
   descripcion: string
   ubicacion: string
+}
   fechaVencimiento: string
   rating: number
   disponible: boolean
@@ -289,7 +287,7 @@ export default function Home() {
               onEliminarMeta={handleEliminarMeta}
               onUnirseAMeta={() => setShowCodigoMeta(true)}
               onVerOfertas={() => setShowOfertas(true)}
-              onTransferirQR={() => setShowQRPayment(true)}
+              onQRPayment={() => setShowQRPayment(true)}
               onLogout={handleLogout}
             />
           </motion.div>
